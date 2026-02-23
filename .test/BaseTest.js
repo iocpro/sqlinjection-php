@@ -1,7 +1,7 @@
 const {Builder, Browser, By, Key, until} = require("selenium-webdriver");
 const firefox = require('selenium-webdriver/firefox');
 const chrome = require('selenium-webdriver/chrome');
-const { spawn } = require("child_process");
+const { spawn, spawnSync } = require("child_process");
 const assert = require('assert');
 
 
@@ -30,7 +30,7 @@ class BaseTest {
         console.log("Closing server...");
         // parem server
         await this.runServer( "../stop", [] );
-        //await this.killServer();
+        //await this.killServer(); // Deprecated!
         // deixem temps perquè es tanquin els processos
         await this.driver.sleep(2000);
         // tanquem browser
@@ -88,35 +88,30 @@ class BaseTest {
 
     runServer( command, options ) {
         // Engeguem server amb la APP
-        let app = null;
+        let resultat = null;
         if( process.platform=="win32" ) {
-            app = spawn(command+".bat",options,{shell:true});
+            resultat = spawnSync(command+".bat",options,{shell:true,encoding:'utf8'});
         } else {
             // linux, macos (darwin), or other
-            app = spawn(command+".sh",options);
+            resultat = spawnSync(command+".sh",options,{encoding:'utf8'});
         }
-        this.cmd = app;
-        return new Promise((resolveFunc) => {
-            app.stdout.on("data", data => {
-                console.log(`stdout: ${data}`);
-            });
-            app.stderr.on("data", data => {
-                console.log(`stderr: ${data}`);
-            });
-            app.on('error', (error) => {
-                console.log(`error: ${error.message}`);
-            });
-            app.on("close", code => {
-                resolveFunc(code);
-                console.log(`child process exited with code ${code}`);
-            });
-        });
+        // deprecated?
+        //this.cmd = app;
+        console.log("RUN SERVER RESULTS ==================================");
+        console.log("EXIT STATUS: "+resultat.status);
+        console.log("STDOUT ----------------------------");
+        console.log(resultat.stdout);
+        console.log("STDOUT ----------------------------");
+        console.log(resultat.stderr);
+        console.log("-----------------------------------");
+
+        return resultat;
     }
 
     async killServer() {
         // tanquem servidor
         if( process.platform=="win32" ) {
-            spawn("taskkill", ["/pid", this.cmd.pid, '/f', '/t']);
+            spawnSync("taskkill", ["/pid", this.cmd.pid, '/f', '/t']);
         } else {
             // Linux, MacOS or other
             await this.cmd.kill("SIGHUP")
