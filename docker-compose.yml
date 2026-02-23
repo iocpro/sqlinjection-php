@@ -11,6 +11,10 @@ services:
       DB_NAME: sqlidb
       DB_USER: exampleuser
       DB_PASSWORD: examplepass
+    depends_on:
+      db:
+        # Condició clau: esperar a que el servei 'db' estigui 'healthy'
+        condition: service_healthy
 
   db:
     image: mysql:5.7
@@ -23,6 +27,19 @@ services:
       # descomentar si volem una DB amb persistència
       #- db:/var/lib/mysql
       - ./sqlscripts:/docker-entrypoint-initdb.d
+    healthcheck:
+      # Comanda per comprovar si MySQL està llest.
+      # Intenta connectar-se com a root i executar una comanda simple i innòcua.
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "$$MYSQL_USER", "-p$$MYSQL_PASSWORD"]
+      # Temps d'espera entre comprovacions
+      interval: 10s
+      # Temps màxim perquè la comanda de test s'executi
+      timeout: 5s
+      # Nombre d'intents abans de considerar el contenidor no sa
+      retries: 5
+      # Període d'arrencada inicial sense penalitzar per fallades
+      start_period: 30s
+
 volumes:
   db:
 
