@@ -22,17 +22,25 @@ class BaseTest {
         // run server and setup driver
         await this.runServer( "../run", [] );
         await this.setupDriver();
+
+        console.log("Reiniciant DB...");
+        await this.runServer( "../initdb", [] );
+
         // deixem temps a que el servidor es posi en marxa
-        await this.driver.sleep(2000);
+        //await this.driver.sleep(2000);
     }
 
     async tearDown() {
-        console.log("Closing server...");
+
+        // No parem el servidor, es massa lent
+        // Ara reiniciem la DB
+        //console.log("Closing server...");
         // parem server
-        await this.runServer( "../stop", [] );
+        //await this.runServer( "../stop", [] );
+        
         //await this.killServer(); // Deprecated!
         // deixem temps perquè es tanquin els processos
-        await this.driver.sleep(2000);
+        //await this.driver.sleep(2000);
         // tanquem browser
         console.log("Closing Selenium driver...");
         await this.driver.quit();
@@ -97,7 +105,7 @@ class BaseTest {
         }
         // deprecated?
         //this.cmd = app;
-        console.log("RUN SERVER RESULTS ==================================");
+        console.log("RUN SERVER =====================================");
         console.log("EXIT STATUS: "+resultat.status);
         console.log("STDOUT ----------------------------");
         console.log(resultat.stdout);

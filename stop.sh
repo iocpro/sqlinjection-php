@@ -1,4 +1,5 @@
 #!/bin/bash
+
 EXEC=$(which docker-compose)
 if [ $? -eq 0 ]; then
 	echo "docker-compose classic"

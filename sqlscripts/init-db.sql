@@ -1,3 +1,10 @@
+# reset de la bd
+# mantenim el volum del docker pero reiniciem els continguts
+
+DROP DATABASE sqlidb;
+CREATE DATABASE sqlidb;
+
+# crear dades
 
 USE sqlidb;
 
