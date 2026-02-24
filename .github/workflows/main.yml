@@ -20,6 +20,6 @@ jobs:
       uses: classroom-resources/autograding-command-grader@v1
       with:
         test-name: form vulnerable index.php
-        setup-command: cd .test ; npm install
+        setup-command: cd .test ; npm install ; ../run.sh
         command: cd .test ; HEADLESS=true npm test form-vulnerable
         timeout: 10
