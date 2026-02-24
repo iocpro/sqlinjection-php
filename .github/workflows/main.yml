@@ -1,0 +1,25 @@
+name: Test Workflow
+
+on:
+  push:
+    branches: [ main, master, dev ]
+  pull_request:
+    branches: [ main, master, dev ]
+  # Permet executar-lo manualment
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: form vulnerable index.php
+      id: form-vulnerable-index-php
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: form vulnerable index.php
+        setup-command: cd .test ; npm install
+        command: cd .test ; HEADLESS=true npm test form-vulnerable
+        timeout: 10
